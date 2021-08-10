@@ -1,34 +1,35 @@
+import logging
 import time
 import uuid
 from copy import deepcopy
 from typing import Optional
 
 import requests
-
 from silasdk.client import App
-
 from .schema import Schema
 
+logger = logging.getLogger(__name__)
 
-def createBody(bodyStructure, fields):
+
+def create_body(data, fields):
     for field in fields:
-        if field in bodyStructure.keys():
-            print("field")
-            print(field)
-            print("fields[field]")
-            print(fields[field])
-            print("bodyStructure[field]")
-            print(bodyStructure[field])
+        if field in data.keys():
+            logger.debug("field")
+            logger.debug(field)
+            logger.debug("fields[field]")
+            logger.debug(fields[field])
+            logger.debug("data[field]")
+            logger.debug(data[field])
             if fields[field] is not None and fields[field]:
-                bodyStructure[field] = fields[field]
+                data[field] = fields[field]
             else:
-                del bodyStructure[field]
+                del data[field]
         else:
-            for bodyField in bodyStructure:
-                if isinstance(bodyStructure[bodyField], dict):
-                    createBody(bodyStructure[bodyField], fields)
+            for bodyField in data:
+                if isinstance(data[bodyField], dict):
+                    create_body(data[bodyField], fields)
 
-    return bodyStructure
+    return data
 
 
 def getMessage(msg_type):
@@ -90,7 +91,7 @@ def createMessage(app: App, payload, msg_type):
     inpt = getMessage(msg_type)
     data = lower_keys(payload)
 
-    inpt = createBody(inpt, data)
+    inpt = create_body(inpt, data)
 
     try:
         inpt["header"]["created"] = int(time.time())
@@ -99,7 +100,7 @@ def createMessage(app: App, payload, msg_type):
 
     inpt = cull_null_values(inpt, payload)
     if app.debug:
-        print(inpt)
+        logger.debug(inpt)
 
     return inpt
 
@@ -121,7 +122,7 @@ def postRequest(
         key :user_private_key
     """
     data = createMessage(app, payload, msg_type)
-    print(data)
+    logger.debug(data)
     header = app.setHeader(data, key, business_key, content_type)
     response = (
         app.post(path, data, header)

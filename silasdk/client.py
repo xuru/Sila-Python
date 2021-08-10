@@ -12,7 +12,7 @@ from . import (
     Wallet,
 )
 from .endpoints import endPoints
-from .ethwallet import BaseWallet, EthWallet
+from .ethwallet import EthWallet
 from .schema import Schema
 
 
@@ -22,8 +22,7 @@ class App:
         tier,
         app_private_key,
         app_handle,
-        debug: bool = False,
-        wallet_class: BaseWallet = EthWallet,
+        wallet_class=EthWallet,
     ):
         """Initalize the application
             This lets users initialize the application by providing the tier, application privatekey and application handle
@@ -37,7 +36,6 @@ class App:
         self.tier = tier.lower()
         self.app_private_key = app_private_key
         self.app_handle = app_handle
-        self.debug = debug
         self.updateSchema()
 
         self.business_information = BusinessInformation(self)

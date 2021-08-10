@@ -1,5 +1,3 @@
-import warnings
-
 from silasdk.client import App
 from silasdk.endpoints import endPoints
 from silasdk.message import postRequest

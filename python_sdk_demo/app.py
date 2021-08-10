@@ -1,144 +1,138 @@
-#!flask/bin/python
-import sys
-from flask import Flask, render_template, request, redirect, Response
-import random, json
+#!/usr/bin/env python
+import json
+
+from flask import Flask, render_template, request
+
 from silasdk import App
-from silasdk import User
-from silasdk import Transaction
 
-
-app1=App("sandbox",'',"test1791.silamoney.eth")
+app1 = App("sandbox", '', "test1791.silamoney.eth")
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def output():
-	return render_template('index.html', name='Joe')
+    return render_template('index.html', name='Joe')
 
 
-@app.route('/checkHandle', methods = ['POST'])
+@app.route('/checkHandle', methods=['POST'])
 def checkHandle():
     data = request.json
-    result = json.dumps(User.checkHandle(app1,data))
+    result = json.dumps(app1.users.checkHandle(data))
     return result
 
-@app.route('/register', methods = ['POST'])
+
+@app.route('/register', methods=['POST'])
 def register():
     # read json + reply
     data = request.json
-    result = json.dumps(User.register(app1,data))
+    result = json.dumps(app1.users.register(data))
     return result
 
 
-@app.route('/requestKyc', methods = ['POST'])
+@app.route('/requestKyc', methods=['POST'])
 def requestKyc():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    result = json.dumps(User.requestKyc(app1,data,data["private_key"]))
+    result = json.dumps(app1.users.requestKyc(data, data["private_key"]))
     return result
 
 
-
-@app.route('/checkKyc', methods = ['POST'])
+@app.route('/checkKyc', methods=['POST'])
 def checkKyc():
-        '''SECURITY ALERT
-        Never transmit private keys over the network in the request body
-        You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-        Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-        '''
-        # read json + reply
-        data = request.json
-        result = json.dumps(User.checkKyc(app1,data,data["private_key"]))
-        return result
+    """SECURITY ALERT
+    Never transmit private keys over the network in the request body
+    You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
+    # read json + reply
+    data = request.json
+    result = json.dumps(app1.users.checkKyc(data, data["private_key"]))
+    return result
 
 
-
-@app.route('/linkAccount', methods = ['POST'])
+@app.route('/linkAccount', methods=['POST'])
 def linkAccount():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
-    data=request.data
-    data1=json.loads(data)
-    result = json.dumps(User.linkAccount(app1,data1,data1["private_key"],plaid=True))
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
+    data = request.data
+    data1 = json.loads(data)
+    result = json.dumps(app1.users.linkAccount(data1, data1["private_key"], plaid=True))
     return result
 
-@app.route('/getAccounts', methods = ['POST'])
+
+@app.route('/getAccounts', methods=['POST'])
 def getAccounts():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    private_key=data["private_key"]
-    result = json.dumps(User.getAccounts(app1,data,private_key))
+    private_key = data["private_key"]
+    result = json.dumps(app1.users.getAccounts(data, private_key))
     return result
 
 
-
-@app.route('/getTransactions', methods = ['POST'])
+@app.route('/getTransactions', methods=['POST'])
 def getTransactions():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    private_key=data["private_key"]
-    result = json.dumps(User.getTransactions(app1,data,private_key))
+    private_key = data["private_key"]
+    result = json.dumps(app1.users.getTransactions(data, private_key))
     return result
 
 
-@app.route('/issueSila', methods = ['POST'])
+@app.route('/issueSila', methods=['POST'])
 def issueSila():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    private_key=data["private_key"]
-    result = json.dumps(Transaction.issueSila(app1,data,private_key))
+    private_key = data["private_key"]
+    result = json.dumps(app1.transactions.issueSila(data, private_key))
     return result
 
 
-@app.route('/redeemSila', methods = ['POST'])
+@app.route('/redeemSila', methods=['POST'])
 def redeemSila():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    private_key=data["private_key"]
-    result = json.dumps(Transaction.redeemSila(app1,data,private_key))
+    private_key = data["private_key"]
+    result = json.dumps(app1.transactions.redeemSila(data, private_key))
     return result
 
 
-
-@app.route('/transferSila', methods = ['POST'])
+@app.route('/transferSila', methods=['POST'])
 def transferSila():
-    '''SECURITY ALERT
+    """SECURITY ALERT
     Never transmit private keys over the network in the request body
     You see a private key in request body here as this is intended for testing linkaccount and other endpoints locally
-    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction 
-    '''
+    Refer to documentation for how to manage your private keys and how it is used by our sdks locally to sign a transaction
+    """
     data = request.json
-    private_key=data["private_key"]
-    result = json.dumps(Transaction.transferSila(app1,data,private_key))
+    private_key = data["private_key"]
+    result = json.dumps(app1.transactions.transferSila(data, private_key))
     return result
-
-
-
 
 
 if __name__ == '__main__':
-	# run!
-	app.run(debug=True)
+    # run!
+    app.run()
