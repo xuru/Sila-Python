@@ -1,9 +1,12 @@
-from .endpoints import endPoints
-from .client import App
 from silasdk import message
 
+from .client import App
+from .endpoints import endPoints
 
-class BusinessInformation():
+
+class BusinessInformation:
+    def __init__(self, app: App):
+        self.app = app
 
     def getBusinessTypes(self):
         """Gets a list of valid business types that can be registered.
@@ -14,7 +17,7 @@ class BusinessInformation():
         path = endPoints["getBusinessTypes"]
         msg_type = "business_types_msg"
         payload = {}
-        response = message.postRequest(self, path, msg_type, payload)
+        response = message.postRequest(self.app, path, msg_type, payload)
         return response
 
     def getBusinessRoles(self):
@@ -26,7 +29,7 @@ class BusinessInformation():
         path = endPoints["getBusinessRoles"]
         msg_type = "business_roles_msg"
         payload = {}
-        response = message.postRequest(self, path, msg_type, payload)
+        response = message.postRequest(self.app, path, msg_type, payload)
         return response
 
     def getNaicsCategories(self):
@@ -38,5 +41,5 @@ class BusinessInformation():
         path = endPoints["getNaicsCategories"]
         msg_type = "naics_categories_msg"
         payload = {}
-        response = message.postRequest(self, path, msg_type, payload)
+        response = message.postRequest(self.app, path, msg_type, payload)
         return response

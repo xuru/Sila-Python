@@ -1,28 +1,51 @@
 import json
-import requests
 from typing import Optional
-from .ethwallet import EthWallet
+
+import requests
+
+from . import (
+    BusinessInformation,
+    BusinessOperations,
+    Documents,
+    Transaction,
+    User,
+    Wallet,
+)
 from .endpoints import endPoints
-from .errors import Errors
+from .ethwallet import BaseWallet, EthWallet
 from .schema import Schema
 
 
-class App():
-
-    def __init__(self, tier, app_private_key, app_handle, debug: bool = False):
-        """Initalize the application 
+class App:
+    def __init__(
+        self,
+        tier,
+        app_private_key,
+        app_handle,
+        debug: bool = False,
+        wallet_class: BaseWallet = EthWallet,
+    ):
+        """Initalize the application
             This lets users initialize the application by providing the tier, application privatekey and application handle
         Args:
             tier  : SANDBOX,PROD etc
             app_private_key : ethereum privat key for the application
             app_handle  : application sila handle (app.silamoney.eth)
         """
+        self.wallet_class = wallet_class
         self.session = requests.Session()
         self.tier = tier.lower()
         self.app_private_key = app_private_key
         self.app_handle = app_handle
         self.debug = debug
         self.updateSchema()
+
+        self.business_information = BusinessInformation(self)
+        self.business_operations = BusinessOperations(self)
+        self.documents = Documents(self)
+        self.transactions = Transaction(self)
+        self.users = User(self)
+        self.wallet = Wallet(self)
 
     def updateSchema(self):
         """updates schema.py on initialization of app
@@ -33,8 +56,7 @@ class App():
         endpoint = endPoints["schemaUrl"]
         message = ["header", "entity", "identity", "crypto", "linkAccount"]
         for i in message:
-            response = self.get(
-                endpoint % i)
+            response = self.get(endpoint % i)
             sch = {response["message"]: response}
             Schema.append(sch)
 
@@ -54,21 +76,18 @@ class App():
         """makes a post request to the sila_apis
         Args:
             path : path to the endpoint being called
-            payload : json msg to be posted 
+            payload : json msg to be posted
             header  : contains the usersignature and authsignature
         """
         url = self.getUrl()
         endpoint = url + path
         data1 = json.dumps(payload)
-        response = self.session.post(
-            endpoint,
-            data=data1,
-            headers=header)
+        response = self.session.post(endpoint, data=data1, headers=header)
 
         output = response.json()
 
         try:
-            output['status_code'] = response.status_code
+            output["status_code"] = response.status_code
         except:
             pass
 
@@ -78,29 +97,24 @@ class App():
         url = self.getUrl()
         endpoint = url + path
         message = json.dumps(payload)
-        files = {'file': fileContents}
+        files = {"file": fileContents}
         response = requests.post(
-            endpoint,
-            data={'data': message},
-            headers=header,
-            files=files
+            endpoint, data={"data": message}, headers=header, files=files
         )
 
         output = response.json()
 
         return output
 
-    def postFileResponse(self, path: str, payload: dict, header: dict) -> requests.Response:
+    def postFileResponse(
+        self, path: str, payload: dict, header: dict
+    ) -> requests.Response:
         url = self.getUrl()
         endpoint = url + path
         data = json.dumps(payload)
-        response = self.session.post(
-            endpoint,
-            data=data,
-            headers=header
-        )
+        response = self.session.post(endpoint, data=data, headers=header)
 
-        if (response.status_code == 200):
+        if response.status_code == 200:
             return response
         else:
             return response.json()
@@ -114,11 +128,8 @@ class App():
         """
         content = json.dumps(payload)
         response = self.session.post(
-            url,
-            data=content,
-            headers={
-                "Content-Type": "application/json"
-            })
+            url, data=content, headers={"Content-Type": "application/json"}
+        )
         output = response.json()
         return output
 
@@ -132,25 +143,31 @@ class App():
         output = response.json()
         return output
 
-    def setHeader(self, msg, key: Optional[str] = None, business_key: Optional[str] = None, content_type: Optional[str] = None):
+    def setHeader(
+        self,
+        msg,
+        key: Optional[str] = None,
+        business_key: Optional[str] = None,
+        content_type: Optional[str] = None,
+    ):
         """set the application header with usersignature and authsignature
         Args:
             key : ethereum private key for the user
             msg : message being sent should be signed by user
         """
-        appsignature = EthWallet.signMessage(msg, self.app_private_key)
-        header = {
-            "authsignature": appsignature,
-            "User-Agent": 'SilaSDK-python/0.2.24'
-        }
-        if content_type is not None and content_type == 'multipart/form-data':
+        appsignature = self.wallet_class.signMessage(msg, self.app_private_key)
+        header = {"authsignature": appsignature, "User-Agent": "SilaSDK-python/0.2.24"}
+        if content_type is not None and content_type == "multipart/form-data":
             pass
         else:
-            header["Content-Type"]: 'application/json' if content_type is None else content_type
+            header[
+                "Content-Type"
+            ] = "application/json" if content_type is None else content_type
         if key is not None and len(key.strip()) > 0:
-            header["usersignature"] = EthWallet.signMessage(msg, key.lower())
+            header["usersignature"] = self.wallet_class.signMessage(msg, key.lower())
         if business_key is not None and len(business_key.strip()) > 0:
-            header["businesssignature"] = EthWallet.signMessage(
-                msg, business_key.lower())
+            header["businesssignature"] = self.wallet_class.signMessage(
+                msg, business_key.lower()
+            )
 
         return header

@@ -1,20 +1,23 @@
-import requests
 import time
 import uuid
-from typing import Optional
 from copy import deepcopy
-from .schema import Schema
+from typing import Optional
+
+import requests
+
 from silasdk.client import App
+
+from .schema import Schema
 
 
 def createBody(bodyStructure, fields):
     for field in fields:
         if field in bodyStructure.keys():
-            print('field')
+            print("field")
             print(field)
-            print('fields[field]')
+            print("fields[field]")
             print(fields[field])
-            print('bodyStructure[field]')
+            print("bodyStructure[field]")
             print(bodyStructure[field])
             if fields[field] is not None and fields[field]:
                 bodyStructure[field] = fields[field]
@@ -28,7 +31,7 @@ def createBody(bodyStructure, fields):
     return bodyStructure
 
 
-def getMessage(self, msg_type):
+def getMessage(msg_type):
     """gets the message from schema
     Args:
         path : endpoint path
@@ -56,7 +59,7 @@ def cull_null_values(data: dict, original: dict) -> dict:
             data[k] = cull_null_values(v, original)
             if len(data[k].items()) == 0:
                 del data[k]
-        elif not exists_in_dict(k, original) and (v is None or v == ''):
+        elif not exists_in_dict(k, original) and (v is None or v == ""):
             del data[k]
 
     return data
@@ -68,23 +71,23 @@ def exists_in_dict(key: str, data: dict) -> bool:
             return True
 
 
-def createMessage(self, payload, msg_type):
+def createMessage(app: App, payload, msg_type):
     """creates the message to be sent based on payload from customer
     Args:
         payload:customer message
     """
     payload.update(
         {
-            "app_handle": str(self.app_handle),
+            "app_handle": str(app.app_handle),
             "crypto_code": "ETH",
-            "relationship": "user"
+            "relationship": "user",
         }
     )
 
-    if payload.get('reference') is None:
+    if payload.get("reference") is None:
         payload.update({"reference": str(uuid.uuid4())})
 
-    inpt = getMessage(self, msg_type)
+    inpt = getMessage(msg_type)
     data = lower_keys(payload)
 
     inpt = createBody(inpt, data)
@@ -95,13 +98,22 @@ def createMessage(self, payload, msg_type):
         pass
 
     inpt = cull_null_values(inpt, payload)
-    if (self.debug):
+    if app.debug:
         print(inpt)
 
     return inpt
 
 
-def postRequest(app: App, path: str, msg_type: str, payload: dict, key: Optional[str] = None, business_key: Optional[str] = None, content_type=None, file_contents=None):
+def postRequest(
+    app: App,
+    path: str,
+    msg_type: str,
+    payload: dict,
+    key: Optional[str] = None,
+    business_key: Optional[str] = None,
+    content_type=None,
+    file_contents=None,
+):
     """post the message and return response
     Args:
         payload:customer message
@@ -111,13 +123,18 @@ def postRequest(app: App, path: str, msg_type: str, payload: dict, key: Optional
     data = createMessage(app, payload, msg_type)
     print(data)
     header = app.setHeader(data, key, business_key, content_type)
-    response = app.post(path, data, header) if file_contents is None else app.postFile(
-        path, data, header, file_contents)
+    response = (
+        app.post(path, data, header)
+        if file_contents is None
+        else app.postFile(path, data, header, file_contents)
+    )
     return response
 
 
-def postGetFile(self, path: str, msg_type: str, payload: dict, key: str) -> requests.Response:
-    data = createMessage(self, payload, msg_type)
-    header = self.setHeader(data, key)
-    response = self.postFileResponse(path, data, header)
+def postGetFile(
+    app: App, path: str, msg_type: str, payload: dict, key: str
+) -> requests.Response:
+    data = createMessage(app, payload, msg_type)
+    header = app.setHeader(data, key)
+    response = app.postFileResponse(path, data, header)
     return response

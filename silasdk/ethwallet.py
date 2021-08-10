@@ -1,14 +1,28 @@
-from eth_account import Account
-import sha3, _pysha3
 import json
-
 from typing import Dict, Union
 
+import _pysha3
+import sha3
+from eth_account import Account
 
-class EthWallet:
+
+class BaseWallet:
+    @staticmethod
+    def create(entropy=""):
+        raise NotImplementedError()
 
     @staticmethod
-    def create(entropy=''):
+    def signMessage(msg: Union[str, Dict], key=None):
+        raise NotImplementedError()
+
+    @staticmethod
+    def verifySignature(msg: Union[str, Dict], sign):
+        raise NotImplementedError()
+
+
+class EthWallet(BaseWallet):
+    @staticmethod
+    def create(entropy=""):
         """Create an Ethereum wallet for a user.
 
         This will generate a private key and ethereum address, that can be used for trasaction,
@@ -19,7 +33,10 @@ class EthWallet:
         tuple: response body with ethereum address and private key
         """
         account = Account.create(entropy)
-        return {"eth_private_key": account.privateKey.hex(), "eth_address": account.address}
+        return {
+            "eth_private_key": account.privateKey.hex(),
+            "eth_address": account.address,
+        }
 
     @staticmethod
     def signMessage(msg: Union[str, Dict], key=None):
@@ -34,7 +51,7 @@ class EthWallet:
         """
         k = _pysha3.keccak_256()
         if isinstance(msg, str):
-            encoded_message = msg.encode('utf-8')
+            encoded_message = msg.encode("utf-8")
         else:
             encoded_message = (json.dumps(msg)).encode("utf-8")
         k.update(encoded_message)
@@ -60,7 +77,7 @@ class EthWallet:
         """
         k = _pysha3.keccak_256()
         if isinstance(msg, str):
-            encoded_message = msg.encode('utf-8')
+            encoded_message = msg.encode("utf-8")
         else:
             encoded_message = (json.dumps(msg)).encode("utf-8")
         k.update(encoded_message)

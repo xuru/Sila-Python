@@ -1,12 +1,15 @@
-from .endpoints import endPoints
-from silasdk import message
-from silasdk.client import App
-import json
-import requests
 import warnings
 
+from silasdk import message
+from silasdk.client import App
 
-class Wallet():
+from .endpoints import endPoints
+
+
+class Wallet:
+    def __init__(self, app: App):
+        self.app = app
+
     def registerWallet(self, payload, user_private_key):
         """Register a new wallet
         Args:
@@ -17,7 +20,8 @@ class Wallet():
         path = endPoints["registerWallet"]
         msg_type = "register_wallet_msg"
         response = message.postRequest(
-            self, path, msg_type, payload, user_private_key)
+            self.app, path, msg_type, payload, user_private_key
+        )
         return response
 
     def getWallets(self, payload, user_private_key):
@@ -30,7 +34,8 @@ class Wallet():
         path = endPoints["getWallets"]
         msg_type = "get_wallets_msg"
         response = message.postRequest(
-            self, path, msg_type, payload, user_private_key)
+            self.app, path, msg_type, payload, user_private_key
+        )
         return response
 
     def getWallet(self, payload, user_private_key):
@@ -43,7 +48,8 @@ class Wallet():
         path = endPoints["getWallet"]
         msg_type = "no_content_msg"
         response = message.postRequest(
-            self, path, msg_type, payload, user_private_key)
+            self.app, path, msg_type, payload, user_private_key
+        )
         return response
 
     @staticmethod
@@ -57,7 +63,9 @@ class Wallet():
             dict: response body (a confirmation message)
         """
         warnings.warn(
-            'This method has been deprecated in favor of update_wallet', DeprecationWarning)
+            "This method has been deprecated in favor of update_wallet",
+            DeprecationWarning,
+        )
         return Wallet.update_wallet(app, payload, user_private_key)
 
     @staticmethod
@@ -72,8 +80,7 @@ class Wallet():
         """
         path = endPoints["updateWallet"]
         msg_type = "update_wallet_msg"
-        response = message.postRequest(
-            app, path, msg_type, payload, user_private_key)
+        response = message.postRequest(app, path, msg_type, payload, user_private_key)
         return response
 
     def deleteWallet(self, payload, user_private_key):
@@ -86,5 +93,6 @@ class Wallet():
         path = endPoints["deleteWallet"]
         msg_type = "no_content_msg"
         response = message.postRequest(
-            self, path, msg_type, payload, user_private_key)
+            self.app, path, msg_type, payload, user_private_key
+        )
         return response
