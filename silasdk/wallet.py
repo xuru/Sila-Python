@@ -1,12 +1,10 @@
 import warnings
 
-from silasdk.client import App
-
 from .endpoints import endPoints
 
 
 class Wallet:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def registerWallet(self, payload, user_private_key):
@@ -52,7 +50,7 @@ class Wallet:
         return response
 
     @staticmethod
-    def updateWallet(app: App, payload: dict, user_private_key: str) -> dict:
+    def updateWallet(app, payload: dict, user_private_key: str) -> dict:
         """Update a wallet
         Args:
             app (App): The app configuration object
@@ -68,7 +66,7 @@ class Wallet:
         return Wallet.update_wallet(app, payload, user_private_key)
 
     @staticmethod
-    def update_wallet(app: App, payload: dict, user_private_key: str) -> dict:
+    def update_wallet(app, payload: dict, user_private_key: str) -> dict:
         """Update a wallet
         Args:
             app (App): The app configuration object

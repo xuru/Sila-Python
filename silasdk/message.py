@@ -5,7 +5,6 @@ from copy import deepcopy
 from typing import Optional
 
 import requests
-from silasdk.client import App
 from .schema import Schema
 
 logger = logging.getLogger(__name__)
@@ -72,7 +71,7 @@ def exists_in_dict(key: str, data: dict) -> bool:
             return True
 
 
-def createMessage(app: App, payload, msg_type):
+def createMessage(app, payload, msg_type):
     """creates the message to be sent based on payload from customer
     Args:
         payload:customer message
@@ -105,7 +104,7 @@ def createMessage(app: App, payload, msg_type):
 
 
 def postRequest(
-    app: App,
+    app,
     path: str,
     msg_type: str,
     payload: dict,
@@ -132,7 +131,7 @@ def postRequest(
 
 
 def postGetFile(
-    app: App, path: str, msg_type: str, payload: dict, key: str
+    app, path: str, msg_type: str, payload: dict, key: str
 ) -> requests.Response:
     data = createMessage(app, payload, msg_type)
     header = app.setHeader(data, key)

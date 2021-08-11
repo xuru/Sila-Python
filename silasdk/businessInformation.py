@@ -1,9 +1,8 @@
-from .client import App
 from .endpoints import endPoints
 
 
 class BusinessInformation:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def getBusinessTypes(self):

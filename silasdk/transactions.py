@@ -1,9 +1,8 @@
-from silasdk.client import App
-from silasdk.endpoints import endPoints
+from .endpoints import endPoints
 
 
 class Transaction:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def issue_sila(self, payload: dict, user_private_key: str) -> dict:

@@ -2,7 +2,6 @@ import json
 from typing import Dict, Union
 
 import _pysha3
-import sha3
 from eth_account import Account
 
 

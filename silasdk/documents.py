@@ -1,10 +1,8 @@
-from silasdk import App
-
 from .endpoints import endPoints
 
 
 class Documents:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def uploadDocument(self, payload, file, user_private_key):

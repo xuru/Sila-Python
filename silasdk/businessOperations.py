@@ -1,9 +1,8 @@
-from .client import App
 from .endpoints import endPoints
 
 
 class BusinessOperations:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def linkBusinessMember(self, payload, user_private_key, business_private_key):

@@ -4,14 +4,12 @@ from typing import Optional
 
 import requests
 
-from silasdk.client import App
-from silasdk.utils.url_parameters import UrlParameters
-
+from .utils.url_parameters import UrlParameters
 from .endpoints import endPoints
 
 
 class User:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
 
     def checkHandle(self, payload):
@@ -140,7 +138,7 @@ class User:
         return response
 
     @staticmethod
-    def getTransactions(app: App, payload: dict, user_private_key: str) -> dict:
+    def getTransactions(app, payload: dict, user_private_key: str) -> dict:
         """get the users transactions registered with ur app
            The user will be checked if they have been kyced, along with app
         Args:
@@ -156,7 +154,7 @@ class User:
         return User.get_transactions(app, payload, user_private_key)
 
     @staticmethod
-    def get_transactions(app: App, payload: dict, user_private_key: str = "") -> dict:
+    def get_transactions(app, payload: dict, user_private_key: str = "") -> dict:
         if user_private_key != "":
             warnings.warn(
                 "user_private_key is no longer needed, this will be removed in future versions.",
@@ -219,7 +217,7 @@ class User:
 
     @staticmethod
     def getEntity(
-        app: App,
+        app,
         payload: dict,
         user_private_key: str,
         pretty_dates: Optional[bool] = None,
@@ -240,7 +238,7 @@ class User:
 
     @staticmethod
     def get_entity(
-        app: App,
+        app,
         payload: dict,
         user_private_key: str,
         pretty_dates: Optional[bool] = None,
@@ -263,7 +261,7 @@ class User:
 
     @staticmethod
     def addRegistrationData(
-        app: App, registration_field: str, payload: dict, user_private_key: str
+        app, registration_field: str, payload: dict, user_private_key: str
     ) -> dict:
         """
         Args:
@@ -282,7 +280,7 @@ class User:
 
     @staticmethod
     def add_registration_data(
-        app: App, registration_field: str, payload: dict, user_private_key: str
+        app, registration_field: str, payload: dict, user_private_key: str
     ) -> dict:
         path = endPoints["addRegistrationData"] + registration_field
         msg_type = "add_registration_data_msg"
@@ -291,7 +289,7 @@ class User:
 
     @staticmethod
     def updateRegistrationData(
-        app: App, registration_field: str, payload: dict, user_private_key: str
+        app, registration_field: str, payload: dict, user_private_key: str
     ):
         """
         Args:
@@ -312,7 +310,7 @@ class User:
 
     @staticmethod
     def update_registration_data(
-        app: App, registration_field: str, payload: dict, user_private_key: str
+        app, registration_field: str, payload: dict, user_private_key: str
     ) -> dict:
         path = endPoints["updateRegistrationData"] + registration_field
         msg_type = "update_registration_data_msg"
@@ -335,7 +333,7 @@ class User:
         return response
 
     @staticmethod
-    def plaid_link_token(app: App, user_handle: str) -> dict:
+    def plaid_link_token(app, user_handle: str) -> dict:
         path = endPoints["plaid_link_token"]
         msg_type = "plaid_link_token_msg"
         payload = {"user_handle": user_handle}
@@ -343,42 +341,42 @@ class User:
         return response
 
     @staticmethod
-    def delete_account(app: App, payload: dict, user_private_key: str) -> dict:
+    def delete_account(app, payload: dict, user_private_key: str) -> dict:
         path = endPoints["delete_account"]
         msg_type = "delete_account"
         response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
-    def check_partner_kyc(app: App, payload: dict) -> dict:
+    def check_partner_kyc(app, payload: dict) -> dict:
         path = "/check_partner_kyc"
         msg_type = "check_partner_kyc"
         response = app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
-    def update_account(app: App, payload: dict, user_private_key: str) -> dict:
+    def update_account(app, payload: dict, user_private_key: str) -> dict:
         path = "/update_account"
         msg_type = "update_account"
         response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
-    def plaid_update_link_token(app: App, payload: dict) -> dict:
+    def plaid_update_link_token(app, payload: dict) -> dict:
         path = endPoints["plaid_update_link_token"]
         msg_type = "plaid_update_link_token"
         response = app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
-    def check_instant_ach(app: App, payload: dict, user_private_key: str) -> dict:
+    def check_instant_ach(app, payload: dict, user_private_key: str) -> dict:
         path = "/check_instant_ach"
         msg_type = "check_instant_ach"
         response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
-    def get_institutions(app: App, payload: dict) -> dict:
+    def get_institutions(app, payload: dict) -> dict:
         path = "/get_institutions"
         msg_type = "get_institutions"
         response = app.postRequest(path, msg_type, payload)
