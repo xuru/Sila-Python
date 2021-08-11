@@ -6,14 +6,12 @@ from typing import Optional
 
 import requests
 
-from . import (
-    BusinessInformation,
-    BusinessOperations,
-    Documents,
-    Transaction,
-    User,
-    Wallet,
-)
+from .businessInformation import BusinessInformation
+from .businessOperations import BusinessOperations
+from .documents import Documents
+from .transactions import Transaction
+from .users import User
+from .wallet import Wallet
 from .endpoints import endPoints
 from .ethwallet import EthWallet
 from .message import cull_null_values, create_body, lower_keys, getMessage
