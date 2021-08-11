@@ -1,4 +1,4 @@
-from silasdk import App, message
+from silasdk import App
 
 from .endpoints import endPoints
 
@@ -17,8 +17,7 @@ class Documents:
         """
         path = endPoints["documents"]
         msg_type = "documents_msg"
-        response = message.postRequest(
-            self.app,
+        response = self.app.postRequest(
             path,
             msg_type,
             payload,
@@ -45,8 +44,8 @@ class Documents:
             + ("&order=" + order if order is not None else "")
         )
         msg_type = "list_documents_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -60,8 +59,8 @@ class Documents:
         """
         path = endPoints["get_document"]
         msg_type = "get_document_msg"
-        response = message.postGetFile(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postGetFile(
+            path, msg_type, payload, user_private_key
         )
         if isinstance(response, dict):
             return response
@@ -88,5 +87,5 @@ class Documents:
             + ("&per_page=" + str(per_page) if per_page is not None else "")
         )
         msg_type = "document_types_msg"
-        response = message.postRequest(self.app, path, msg_type, payload)
+        response = self.app.postRequest(path, msg_type, payload)
         return response

@@ -1,4 +1,7 @@
 import json
+import logging
+import time
+import uuid
 from typing import Optional
 
 import requests
@@ -13,16 +16,19 @@ from . import (
 )
 from .endpoints import endPoints
 from .ethwallet import EthWallet
+from .message import cull_null_values, create_body, lower_keys, getMessage
 from .schema import Schema
+
+logger = logging.getLogger(__name__)
 
 
 class App:
     def __init__(
-        self,
-        tier,
-        app_private_key,
-        app_handle,
-        wallet_class=EthWallet,
+            self,
+            tier,
+            app_private_key,
+            app_handle,
+            wallet_class=EthWallet,
     ):
         """Initalize the application
             This lets users initialize the application by providing the tier, application privatekey and application handle
@@ -105,7 +111,7 @@ class App:
         return output
 
     def postFileResponse(
-        self, path: str, payload: dict, header: dict
+            self, path: str, payload: dict, header: dict
     ) -> requests.Response:
         url = self.getUrl()
         endpoint = url + path
@@ -142,11 +148,11 @@ class App:
         return output
 
     def setHeader(
-        self,
-        msg,
-        key: Optional[str] = None,
-        business_key: Optional[str] = None,
-        content_type: Optional[str] = None,
+            self,
+            msg,
+            key: Optional[str] = None,
+            business_key: Optional[str] = None,
+            content_type: Optional[str] = None,
     ):
         """set the application header with usersignature and authsignature
         Args:
@@ -169,3 +175,68 @@ class App:
             )
 
         return header
+
+    def createMessage(self, payload, msg_type):
+        """creates the message to be sent based on payload from customer
+        Args:
+            payload:customer message
+        """
+        payload.update(
+            {
+                "app_handle": str(self.app_handle),
+                "crypto_code": "ETH",
+                "relationship": "user",
+            }
+        )
+
+        if payload.get("reference") is None:
+            payload.update({"reference": str(uuid.uuid4())})
+
+        inpt = getMessage(msg_type)
+        data = lower_keys(payload)
+
+        inpt = create_body(inpt, data)
+
+        try:
+            inpt["header"]["created"] = int(time.time())
+        except:
+            pass
+
+        inpt = cull_null_values(inpt, payload)
+        logger.debug(inpt)
+
+        return inpt
+
+    def postRequest(
+            self,
+            path: str,
+            msg_type: str,
+            payload: dict,
+            key: Optional[str] = None,
+            business_key: Optional[str] = None,
+            content_type=None,
+            file_contents=None,
+    ):
+        """post the message and return response
+        Args:
+            payload:customer message
+            path : endpoint
+            key :user_private_key
+        """
+        data = self.createMessage(payload, msg_type)
+        logger.debug(data)
+        header = self.setHeader(data, key, business_key, content_type)
+        response = (
+            self.post(path, data, header)
+            if file_contents is None
+            else self.postFile(path, data, header, file_contents)
+        )
+        return response
+
+    def postGetFile(
+            self, path: str, msg_type: str, payload: dict, key: str
+    ) -> requests.Response:
+        data = self.createMessage(payload, msg_type)
+        header = self.setHeader(data, key)
+        response = self.postFileResponse(path, data, header)
+        return response

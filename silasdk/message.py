@@ -99,8 +99,7 @@ def createMessage(app: App, payload, msg_type):
         pass
 
     inpt = cull_null_values(inpt, payload)
-    if app.debug:
-        logger.debug(inpt)
+    logger.debug(inpt)
 
     return inpt
 

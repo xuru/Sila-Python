@@ -4,7 +4,6 @@ from typing import Optional
 
 import requests
 
-from silasdk import message
 from silasdk.client import App
 from silasdk.utils.url_parameters import UrlParameters
 
@@ -25,7 +24,7 @@ class User:
         """
         path = endPoints["checkHandle"]
         msg_type = "header_msg"
-        response = message.postRequest(self.app, path, msg_type, payload)
+        response = self.app.postRequest(path, msg_type, payload)
         return response
 
     def register(self, payload):
@@ -38,7 +37,7 @@ class User:
         """
         path = endPoints["register"]
         msg_type = "entity_msg"
-        response = message.postRequest(self.app, path, msg_type, payload)
+        response = self.app.postRequest(path, msg_type, payload)
         return response
 
     def requestKyc(self, payload, user_private_key, use_kyc_level=False):
@@ -51,8 +50,8 @@ class User:
         """
         path = endPoints["requestKyc"]
         msg_type = "header_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -73,8 +72,8 @@ class User:
             )
             payload.update({"plaid_token": payload.get("public_token")})
             payload.pop("public_token")
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -88,8 +87,8 @@ class User:
         """
         path = endPoints["checkKyc"]
         msg_type = "header_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -104,8 +103,8 @@ class User:
         """
         path = endPoints["addIdentity"]
         msg_type = "identity_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -120,8 +119,8 @@ class User:
         """
         path = endPoints["getAccounts"]
         msg_type = "get_accounts_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -135,8 +134,8 @@ class User:
         """
         path = endPoints["getAccountBalance"]
         msg_type = "account_name_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -165,7 +164,7 @@ class User:
             )
         path = endPoints["getTransactions"]
         msg_type = "get_transaction_msg"
-        response = message.postRequest(app, path, msg_type, payload)
+        response = app.postRequest(path, msg_type, payload)
         return response
 
     def silaBalance(self, address):
@@ -196,7 +195,7 @@ class User:
         payload = {"address": str(address)}
         path = endPoints["getSilaBalance"]
         msg_type = "sila_balance_msg"
-        response = message.postRequest(self.app, path, msg_type, payload)
+        response = self.app.postRequest(path, msg_type, payload)
         return response
 
     def getEntities(self, payload, per_page=None, page=None):
@@ -215,7 +214,7 @@ class User:
             + (("&page=" + str(page)) if page is not None else "")
         )
         msg_type = "header_msg"
-        response = message.postRequest(self.app, path, msg_type, payload)
+        response = self.app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
@@ -259,7 +258,7 @@ class User:
         if pretty_dates:
             path += UrlParameters.add_query_parameter("pretty_dates", "true")
         msg_type = "get_entity_msg"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
@@ -287,7 +286,7 @@ class User:
     ) -> dict:
         path = endPoints["addRegistrationData"] + registration_field
         msg_type = "add_registration_data_msg"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
@@ -317,7 +316,7 @@ class User:
     ) -> dict:
         path = endPoints["updateRegistrationData"] + registration_field
         msg_type = "update_registration_data_msg"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def deleteRegistrationData(self, registration_field, payload, user_private_key):
@@ -330,8 +329,8 @@ class User:
         """
         path = endPoints["deleteRegistrationData"] + registration_field
         msg_type = "delete_registration_data_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -340,47 +339,47 @@ class User:
         path = endPoints["plaid_link_token"]
         msg_type = "plaid_link_token_msg"
         payload = {"user_handle": user_handle}
-        response = message.postRequest(app, path, msg_type, payload)
+        response = app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
     def delete_account(app: App, payload: dict, user_private_key: str) -> dict:
         path = endPoints["delete_account"]
         msg_type = "delete_account"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
     def check_partner_kyc(app: App, payload: dict) -> dict:
         path = "/check_partner_kyc"
         msg_type = "check_partner_kyc"
-        response = message.postRequest(app, path, msg_type, payload)
+        response = app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
     def update_account(app: App, payload: dict, user_private_key: str) -> dict:
         path = "/update_account"
         msg_type = "update_account"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
     def plaid_update_link_token(app: App, payload: dict) -> dict:
         path = endPoints["plaid_update_link_token"]
         msg_type = "plaid_update_link_token"
-        response = message.postRequest(app, path, msg_type, payload)
+        response = app.postRequest(path, msg_type, payload)
         return response
 
     @staticmethod
     def check_instant_ach(app: App, payload: dict, user_private_key: str) -> dict:
         path = "/check_instant_ach"
         msg_type = "check_instant_ach"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     @staticmethod
     def get_institutions(app: App, payload: dict) -> dict:
         path = "/get_institutions"
         msg_type = "get_institutions"
-        response = message.postRequest(app, path, msg_type, payload)
+        response = app.postRequest(path, msg_type, payload)
         return response

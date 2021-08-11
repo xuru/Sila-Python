@@ -1,6 +1,5 @@
 from silasdk.client import App
 from silasdk.endpoints import endPoints
-from silasdk.message import postRequest
 
 
 class Transaction:
@@ -18,7 +17,7 @@ class Transaction:
         """
         path = endPoints["issueSila"]
         msg_type = "issue_msg"
-        response = postRequest(self.app, path, msg_type, payload, user_private_key)
+        response = self.app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def redeemSila(self, payload, user_private_key):
@@ -32,7 +31,7 @@ class Transaction:
         """
         path = endPoints["redeemSila"]
         msg_type = "redeem_msg"
-        response = postRequest(self.app, path, msg_type, payload, user_private_key)
+        response = self.app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def transferSila(self, payload, user_private_key, use_destination_address=False):
@@ -46,7 +45,7 @@ class Transaction:
         """
         path = endPoints["transferSila"]
         msg_type = "transfer_msg"
-        response = postRequest(self.app, path, msg_type, payload, user_private_key)
+        response = self.app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def plaidSamedayAuth(self, payload, user_private_key):
@@ -60,7 +59,7 @@ class Transaction:
         """
         path = endPoints["plaidSameDayAuth"]
         msg_type = "account_name_msg"
-        response = postRequest(self.app, path, msg_type, payload, user_private_key)
+        response = self.app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def cancelTransaction(self, payload, user_private_key):
@@ -75,5 +74,5 @@ class Transaction:
         """
         path = endPoints["cancelTransaction"]
         msg_type = "cancel_transaction_msg"
-        response = postRequest(self.app, path, msg_type, payload, user_private_key)
+        response = self.app.postRequest(path, msg_type, payload, user_private_key)
         return response

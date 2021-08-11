@@ -1,6 +1,5 @@
 import warnings
 
-from silasdk import message
 from silasdk.client import App
 
 from .endpoints import endPoints
@@ -19,8 +18,8 @@ class Wallet:
         """
         path = endPoints["registerWallet"]
         msg_type = "register_wallet_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -33,8 +32,8 @@ class Wallet:
         """
         path = endPoints["getWallets"]
         msg_type = "get_wallets_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -47,8 +46,8 @@ class Wallet:
         """
         path = endPoints["getWallet"]
         msg_type = "no_content_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
 
@@ -80,7 +79,7 @@ class Wallet:
         """
         path = endPoints["updateWallet"]
         msg_type = "update_wallet_msg"
-        response = message.postRequest(app, path, msg_type, payload, user_private_key)
+        response = app.postRequest(path, msg_type, payload, user_private_key)
         return response
 
     def deleteWallet(self, payload, user_private_key):
@@ -92,7 +91,7 @@ class Wallet:
         """
         path = endPoints["deleteWallet"]
         msg_type = "no_content_msg"
-        response = message.postRequest(
-            self.app, path, msg_type, payload, user_private_key
+        response = self.app.postRequest(
+            path, msg_type, payload, user_private_key
         )
         return response
